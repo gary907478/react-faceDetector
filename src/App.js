@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 import Navigation from "./components/Navigation/Navigation";
 import Logo from "./components/Logo/Logo";
 import Rank from "./components/Rank/Rank";
@@ -134,7 +134,7 @@ class App extends Component {
       imgUrl: "",
       box: {},
       route: "signin",
-      isSignedIn: false,
+      isSignedIn: false
     };
   }
 
@@ -172,20 +172,23 @@ class App extends Component {
   };
 
   onRouteChange = route => {
-    if(route === 'signout'){
-      this.setState({isSignedIn: false})
-    }else if(route === 'home'){
-      this.setState({isSignedIn: true})
+    if (route === "signout") {
+      this.setState({ isSignedIn: false });
+    } else if (route === "home") {
+      this.setState({ isSignedIn: true });
     }
     this.setState({ route: route });
   };
 
   render() {
-    const {isSignedIn, imgUrl, route, box} = this.state;
+    const { isSignedIn, imgUrl, route, box } = this.state;
     return (
       <div className="App">
         <Particles className="particles" params={particlesOption} />
-        <Navigation  isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />
+        <Navigation
+          isSignedIn={isSignedIn}
+          onRouteChange={this.onRouteChange}
+        />
         {route === "home" ? (
           <div>
             <Logo />
