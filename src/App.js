@@ -6,11 +6,11 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition'
 import Signin from './components/Signin/Signin'
 import Register from './components/Register/Register'
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
-import Clarifai from 'clarifai'
 import 'tachyons'
 import Particles from 'react-particles-js'
 import './App.css'
 
+//background particles option by particles.js
 const particlesOption = {
   particles: {
     number: {
@@ -122,27 +122,25 @@ const particlesOption = {
   retina_detect: true
 }
 
-const app = new Clarifai.App({
-  apiKey: 'edb99c5d2b4e4eb3b2f48f5f71c37f22'
-})
+const initialState = {
+  input: '',
+  imgUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
 
 class App extends Component {
   constructor() {
     super()
-    this.state = {
-      input: '',
-      imgUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false,
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: ''
-      }
-    }
+    this.state = initialState
   }
 
   loadUser = data => {
@@ -177,6 +175,7 @@ class App extends Component {
     }
   }
 
+  //display blue face detector box
   displayFaceBox = box => {
     console.log(box)
     this.setState({ box: box })
@@ -187,11 +186,17 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imgUrl: this.state.input })
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    fetch('https://young-ocean-50353.herokuapp.com/imageurl', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    })
+      .then(response => response.json())
       .then(response => {
         if (response) {
-          fetch('http://localhost:3000/image', {
+          fetch('https://young-ocean-50353.herokuapp.com/image', {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -206,6 +211,7 @@ class App extends Component {
                 })
               )
             })
+            .catch(console.log())
         }
         this.displayFaceBox(this.calculateFaceLocation(response))
       })
@@ -214,7 +220,7 @@ class App extends Component {
 
   onRouteChange = route => {
     if (route === 'signout') {
-      this.setState({ isSignedIn: false })
+      this.setState(initialState)
     } else if (route === 'home') {
       this.setState({ isSignedIn: true })
     }
